@@ -17,6 +17,17 @@ class Store {
     // init defaultBox
     this.defaultBox = this.createBox(true)
   }
+
+  getBoxIndex(boxId) {
+    return this.boxIds.indexOf(boxId)
+  }
+
+  @observable draggingBoxId = null
+  @action
+  setDraggingBoxId(id) {
+    this.draggingBoxId = id
+  }
+
   @action
   createItem(name) {
     const item = new Item(this, name)
@@ -55,9 +66,21 @@ class Store {
     return this.boxIds.map(boxId => this.boxes[boxId])
   }
 
+  moveBoxById(boxId, toIndex) {
+    const fromIndex = this.getBoxIndex(boxId)
+    return this.moveBox(fromIndex, toIndex)
+  }
+
   @action
   moveBox(fromIndex, toIndex) {
-    this.boxIds = move(this.boxIds, fromIndex, toIndex)
+    this.boxIds = move(this.boxIds, fromIndex, toIndex + (fromIndex < toIndex ? 1 : 0))
+  }
+
+  moveItem(itemId, toBoxId) {
+    const box = Object.values(this.getBoxes()).find(box => box.containsItem(itemId))
+    if (box) {
+      this.moveItemBetweenBox(itemId, box.id, toBoxId)
+    }
   }
 
   @action

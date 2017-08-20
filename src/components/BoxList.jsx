@@ -8,8 +8,9 @@ const BoxList = inject('store')(observer(({store}) => (
     padding: 10
   }}>
     {
-      store.boxList.map( box => (<Box key={box.id} box={box}/>))
+      store.boxList.map( box => (<Box key={box.id} id={box.id} box={box}/>))
     }
+    <div style={{clear: 'both'}}></div>
   </div>
 )))
 

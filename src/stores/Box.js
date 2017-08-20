@@ -14,6 +14,10 @@ class Box {
     this.itemIds = []
   }
 
+  containsItem(itemId) {
+    return this.itemIds.findIndex(_itemId => _itemId === itemId) > -1
+  }
+
   @action
   addItem(itemId) {
     if (this.itemIds.indexOf(itemId) === -1) {
