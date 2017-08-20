@@ -1,3 +1,4 @@
+import { observable, computed, action } from 'mobx'
 import Item from './Item'
 import Box from './Box'
 import {
@@ -7,16 +8,16 @@ import {
 } from './common'
 
 class Store {
-  items = {} // 所有已有item
-  boxes = {} // 所有已有box，不含default
-  boxIds = [] // 不含default的box排序序列
-  defaultBox = null
+  @observable items = {} // 所有已有item
+  @observable boxes = {} // 所有已有box，不含default
+  @observable boxIds = [] // 不含default的box排序序列
+  @observable defaultBox = null
 
   constructor() {
     // init defaultBox
     this.defaultBox = this.createBox(true)
   }
-
+  @action
   createItem(name) {
     const item = new Item(this, name)
     this.items[item.id] = item
@@ -24,6 +25,7 @@ class Store {
     return item
   }
 
+  @action
   deleteItem(itemId) {
     Object.values(this.getBoxes()).forEach(box => box.removeItem(itemId))
     this.items = deleteFromMap(itemId, this.items)
@@ -33,6 +35,7 @@ class Store {
     return includeDefault ? {default: this.defaultBox, ...this.boxes} : this.boxes
   }
 
+  @action
   createBox(isDefault = false) {
     const box = new Box(this, isDefault, isDefault?true:false)
     if (!isDefault) {
@@ -42,19 +45,22 @@ class Store {
     return box
   }
 
+  @action
   deleteBox(boxId) {
     this.boxIds = deleteFromArray(boxId, this.boxIds)
     this.boxes = deleteFromMap(boxId, this.boxes)
   }
 
-  get boxList() {
+  @computed get boxList() {
     return this.boxIds.map(boxId => this.boxes[boxId])
   }
 
+  @action
   moveBox(fromIndex, toIndex) {
     this.boxIds = move(this.boxIds, fromIndex, toIndex)
   }
 
+  @action
   moveItemBetweenBox(itemId, fromBoxId, toBoxId) {
     const boxes = this.getBoxes()
 

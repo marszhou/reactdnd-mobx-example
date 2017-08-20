@@ -1,6 +1,10 @@
 import { v4 } from 'node-uuid'
+import { observable } from 'mobx'
 
 class Item {
+  @observable id
+  @observable name
+
   constructor(root, name) {
     this.root = root
     this.id = v4()
