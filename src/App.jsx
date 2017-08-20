@@ -1,5 +1,7 @@
 import React from 'react'
-import DefaultBox from './containers/DefaultBox'
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import DefaultBox from './components/DefaultBox'
 import BoxList from './components/BoxList'
 
 const App = () => (
@@ -10,4 +12,4 @@ const App = () => (
   </div>
 )
 
-export default App
+export default DragDropContext(HTML5Backend)(App)
