@@ -97,7 +97,7 @@ class Store {
     if (fromBoxId!==toBoxId) {
       this.moveItem(itemId, toBoxId)
     }
-    const toBox = toBoxId === 'default' ? this.defaultBox : this.boxes[toBoxId]
+    const toBox = this.getBoxes()[toBoxId]
     toBox.moveItemById(itemId, toIndex)
   }
 

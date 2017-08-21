@@ -112,7 +112,7 @@ const itemTarget = {
     const { store, id: toBoxId } = props
     store.moveItem(fromItemId, toBoxId)
 
-    return { dropInBox: true };
+    // return { dropInBox: true };
   }
 }
 Box = DropTarget(
