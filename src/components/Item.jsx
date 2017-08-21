@@ -26,7 +26,7 @@ const itemSource = {
     const { id: droppedId, originalNest } = monitor.getItem()
     const { store } = props
     const didDrop = monitor.didDrop()
-
+    // const dropResult = monitor.getDropResult()
     if (!didDrop) {
       store.moveItemById(droppedId, originalNest.boxId, originalNest.index)
     }

@@ -7,7 +7,7 @@ import ItemList from './ItemList'
 import types from '../Consts'
 
 let Box = (
-  observer(({store, id, box, connectDragSource, connectDropTarget, isDragging, canDrop}) => {
+  observer(({store, id, box, connectDragSource, connectDropTarget, connectDropItemTarget, isDragging, canDrop}) => {
     const items = box.itemList.slice()
     const classnames = {
       fixedBox: box.fixed,
@@ -17,7 +17,7 @@ let Box = (
     const style = {
       opacity: isDragging ? 0 : 1
     }
-    return connectDropTarget(connectDragSource(
+    return connectDropItemTarget(connectDropTarget(connectDragSource(
       <div className={cx(classnames)} style={style}>
         {
           box.fixed ? null : (
@@ -32,7 +32,7 @@ let Box = (
         }
         <ItemList items={items}/>
       </div>
-    ))
+    )))
   })
 )
 
@@ -56,7 +56,7 @@ const boxSource = {
     const { id: droppedId, originalIndex } = monitor.getItem();
     const { store } = props
     const didDrop = monitor.didDrop();
-    const dropResult = monitor.getDropResult()
+    // const dropResult = monitor.getDropResult()
     store.setDraggingBoxId(null)
 
     if (!didDrop) {
@@ -94,6 +94,32 @@ Box = DropTarget(
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
     isOverCurrent: monitor.isOver({ shallow: true }),
+    canDrop: monitor.canDrop(),
+    itemType: monitor.getItemType()
+  })
+)(Box)
+
+const itemTarget = {
+  canDrop() {
+    return true
+  },
+  drop(props, monitor, component) {
+    if (monitor.didDrop()) {
+      return;
+    }
+
+    const { id: fromItemId } = monitor.getItem();
+    const { store, id: toBoxId } = props
+    store.moveItem(fromItemId, toBoxId)
+
+    return { dropInBox: true };
+  }
+}
+Box = DropTarget(
+  types.ITEM,
+  itemTarget,
+  (connect, monitor)=> ({
+    connectDropItemTarget: connect.dropTarget(),
     canDrop: monitor.canDrop(),
     itemType: monitor.getItemType()
   })
