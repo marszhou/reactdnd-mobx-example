@@ -6,54 +6,6 @@ import { DragSource, DropTarget } from 'react-dnd';
 import ItemList from './ItemList'
 import types from '../Consts'
 
-const boxSource = {
-  canDrag(props, monitor) {
-    const { store, id } = props
-    return !props.box.fixed && store.draggingBoxId === id
-  },
-
-  isDragging(props, monitor) {
-    return monitor.getItem().id === props.id;
-  },
-
-  beginDrag(props, monitor, component) {
-    const {id, store} = props
-    const index = store.getBoxIndex(id)
-    return {id, originalIndex: index};
-  },
-
-  endDrag(props, monitor, component) {
-    const { id: droppedId, originalIndex } = monitor.getItem();
-    const { store } = props
-    const didDrop = monitor.didDrop();
-    const dropResult = monitor.getDropResult()
-    store.setDraggingBoxId(null)
-
-    if (!didDrop) {
-      store.moveBoxById(droppedId, originalIndex)
-    }
-  }
-}
-
-const boxTarget = {
-  canDrop(props, monitor) {
-    return !props.box.fixed //&& props.id !== monitor.getItem().id
-  },
-
-  hover(props, monitor, component) {
-    const { id: draggedId } = monitor.getItem();
-    const { id: overId, store } = props;
-    if (draggedId !== overId) {
-      const overIndex = store.getBoxIndex(overId)
-      store.moveBoxById(draggedId, overIndex)
-    }
-  },
-  drop(props, monitor, component) {
-    const item = monitor.getItem()
-    console.log(item)
-  }
-}
-
 let Box = (
   observer(({store, id, box, connectDragSource, connectDropTarget, isDragging, canDrop}) => {
     const items = box.itemList.slice()
@@ -84,6 +36,34 @@ let Box = (
   })
 )
 
+const boxSource = {
+  canDrag(props, monitor) {
+    const { store, id } = props
+    return !props.box.fixed && store.draggingBoxId === id
+  },
+
+  isDragging(props, monitor) {
+    return monitor.getItem().id === props.id;
+  },
+
+  beginDrag(props, monitor, component) {
+    const {id, store} = props
+    const index = store.getBoxIndex(id)
+    return {id, originalIndex: index};
+  },
+
+  endDrag(props, monitor, component) {
+    const { id: droppedId, originalIndex } = monitor.getItem();
+    const { store } = props
+    const didDrop = monitor.didDrop();
+    const dropResult = monitor.getDropResult()
+    store.setDraggingBoxId(null)
+
+    if (!didDrop) {
+      store.moveBoxById(droppedId, originalIndex)
+    }
+  }
+}
 Box = DragSource(
   types.BOX,
   boxSource,
@@ -93,6 +73,20 @@ Box = DragSource(
   })
 )(Box)
 
+const boxTarget = {
+  canDrop(props, monitor) {
+    return !props.box.fixed
+  },
+
+  hover(props, monitor, component) {
+    const { id: draggedId } = monitor.getItem();
+    const { id: overId, store } = props;
+    if (draggedId !== overId) {
+      const overIndex = store.getBoxIndex(overId)
+      store.moveBoxById(draggedId, overIndex)
+    }
+  }
+}
 Box = DropTarget(
   types.BOX,
   boxTarget,
