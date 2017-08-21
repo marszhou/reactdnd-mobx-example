@@ -22,6 +22,18 @@ class Store {
     return this.boxIds.indexOf(boxId)
   }
 
+  getItemNestInfo(itemId) {
+    let box = this.findItemBox(itemId)
+    if (box) {
+      const boxId = box.id
+      const index = box.itemIndexOf(itemId)
+      return {
+        boxId,
+        index
+      }
+    }
+  }
+
   @observable draggingBoxId = null
   @action
   setDraggingBoxId(id) {
@@ -76,8 +88,21 @@ class Store {
     this.boxIds = move(this.boxIds, fromIndex, toIndex + (fromIndex < toIndex ? 1 : 0))
   }
 
+  findItemBox(itemId) {
+    return Object.values(this.getBoxes()).find(box => box.containsItem(itemId))
+  }
+
+  moveItemById(itemId, toBoxId, toIndex) {
+    const {boxId: fromBoxId} = this.getItemNestInfo(itemId)
+    if (fromBoxId!==toBoxId) {
+      this.moveItem(itemId, toBoxId)
+    }
+    const toBox = toBoxId === 'default' ? this.defaultBox : this.boxes[toBoxId]
+    toBox.moveItemById(itemId, toIndex)
+  }
+
   moveItem(itemId, toBoxId) {
-    const box = Object.values(this.getBoxes()).find(box => box.containsItem(itemId))
+    const box = this.findItemBox(itemId)
     if (box) {
       this.moveItemBetweenBox(itemId, box.id, toBoxId)
     }

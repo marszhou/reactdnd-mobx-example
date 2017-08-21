@@ -14,6 +14,10 @@ class Box {
     this.itemIds = []
   }
 
+  itemIndexOf(itemId) {
+    return this.itemIds.indexOf(itemId)
+  }
+
   containsItem(itemId) {
     return this.itemIds.findIndex(_itemId => _itemId === itemId) > -1
   }
@@ -43,7 +47,12 @@ class Box {
 
   @action
   moveItem(fromIndex, toIndex) {
-    this.itemIds = move(this.itemIds, fromIndex, toIndex)
+    this.itemIds = move(this.itemIds, fromIndex, toIndex + (fromIndex < toIndex ? 1 : 0))
+  }
+
+  moveItemById(itemId, toIndex) {
+    const fromIndex = this.itemIndexOf(itemId)
+    this.moveItem(fromIndex, toIndex)
   }
 
   toJS() {
